@@ -13,10 +13,10 @@ public class CronExpressionParser implements ParserService<CronExpression, Strin
     private final Pattern fieldPattern = Pattern.compile("((\\*)|(\\d+)-(\\d+)|(\\d+))(/(\\d+))?");
 
     private static final Map<CronExpression.CronField, List<Integer>> rangeByField = Map.of(
-        CronExpression.CronField.MINUTE.MINUTE, List.of(0, 59),
+        CronExpression.CronField.MINUTE, List.of(0, 59),
         CronExpression.CronField.HOUR, List.of(0, 23),
         CronExpression.CronField.DAY_OF_MONTH, List.of(1, 31),
-        CronExpression.CronField.MONTH, List.of(0, 11),
+        CronExpression.CronField.MONTH, List.of(1, 12),
         CronExpression.CronField.DAY_OF_WEEK, List.of(1, 7)
     );
 
@@ -60,29 +60,29 @@ public class CronExpressionParser implements ParserService<CronExpression, Strin
 
             int intervalStart = 0, intervalEnd = 0;
 
-            if(fieldMatcher.group(2).length() > 0) { // asterisk is present.
+            if(fieldMatcher.group(2) != null) { // asterisk is present.
                 List<Integer> fieldRange = rangeByField.get(cronField);
                 intervalStart = fieldRange.get(0);
                 intervalEnd = fieldRange.get(1);
             }
 
-            else if(fieldMatcher.group(5).length() > 0) { // single number is present
+            else if(fieldMatcher.group(5) != null) { // single number is present
                 intervalStart = Integer.parseInt(fieldMatcher.group(5));
                 intervalEnd = Integer.parseInt(fieldMatcher.group(5));
             }
 
-            else if(fieldMatcher.group(3).length() > 0) { // a range is present ie. 3-5
+            else if(fieldMatcher.group(3) != null) { // a range is present ie. 3-5
                 intervalStart = Integer.parseInt(fieldMatcher.group(3));
                 intervalEnd = Integer.parseInt(fieldMatcher.group(4));
             }
 
-            int iterateInterval = fieldMatcher.group(7).length() > 1 ? Integer.parseInt(fieldMatcher.group(7)) : 1;
+            int iterateInterval = fieldMatcher.group(7) != null ? Integer.parseInt(fieldMatcher.group(7)) : 1;
 
             int finalIntervalEnd = intervalEnd; // final var for lambda.
 
             Set<Integer> generated = IntStream
                 .iterate(intervalStart, i -> i <= finalIntervalEnd, i -> i + iterateInterval)
-                .mapToObj(Integer::valueOf)
+                .boxed()
                 .collect(Collectors.toSet());
 
             result.addAll(generated);
