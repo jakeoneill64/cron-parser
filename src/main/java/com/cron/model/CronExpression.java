@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -18,33 +19,38 @@ public class CronExpression {
         DAY_OF_WEEK
     }
 
-    private final int[] minute;
-    private final int[] hour;
-    private final int[] dayOfMonth;
-    private final int[] month;
-    private final int[] dayOfWeek;
+    private final Set<Integer> minute;
+    private final Set<Integer> hour;
+    private final Set<Integer> dayOfMonth;
+    private final Set<Integer> month;
+    private final Set<Integer> dayOfWeek;
     private final String command;
 
     @Override
     public String toString(){
-        String minutes = Arrays.stream(minute)
-                .mapToObj(Integer::toString)
+        String minutes = minute
+                .stream()
+                .map(String::valueOf)
                 .collect(Collectors.joining());
 
-        String hours = Arrays.stream(hour)
-                .mapToObj(Integer::toString)
+        String hours = hour
+                .stream()
+                .map(String::valueOf)
                 .collect(Collectors.joining());
 
-        String daysOfMonth = Arrays.stream(dayOfMonth)
-                .mapToObj(Integer::toString)
+        String daysOfMonth = dayOfMonth
+                .stream()
+                .map(String::valueOf)
                 .collect(Collectors.joining());
 
-        String months = Arrays.stream(month)
-                .mapToObj(Integer::toString)
+        String months = month
+                .stream()
+                .map(String::valueOf)
                 .collect(Collectors.joining());
 
-        String daysOfWeek = Arrays.stream(dayOfWeek)
-                .mapToObj(Integer::toString)
+        String daysOfWeek = dayOfWeek
+                .stream()
+                .map(String::valueOf)
                 .collect(Collectors.joining());
 
         return """
