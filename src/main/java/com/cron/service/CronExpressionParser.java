@@ -49,6 +49,8 @@ public class CronExpressionParser implements ParserService<CronExpression, Strin
     private Set<Integer> parseNumericField(String field, CronExpression.CronField cronField){
         String[] listedUnits = field.split(",");
 
+        List<Integer> fieldRange = rangeByField.get(cronField);
+
         //use a hashset because we are only interested in unique values.
         Set<Integer> result = new HashSet<>();
 
@@ -61,7 +63,6 @@ public class CronExpressionParser implements ParserService<CronExpression, Strin
             int intervalStart = 0, intervalEnd = 0;
 
             if(fieldMatcher.group(2) != null) { // asterisk is present.
-                List<Integer> fieldRange = rangeByField.get(cronField);
                 intervalStart = fieldRange.get(0);
                 intervalEnd = fieldRange.get(1);
             }
@@ -78,6 +79,10 @@ public class CronExpressionParser implements ParserService<CronExpression, Strin
 
             int iterateInterval = fieldMatcher.group(7) != null ? Integer.parseInt(fieldMatcher.group(7)) : 1;
 
+            //check that the values are in range
+            if(intervalStart < fieldRange.get(0) || intervalEnd > fieldRange.get(1))
+                throw new IllegalArgumentException("unable to parse expression: value out of range for " + cronField.name());
+
             int finalIntervalEnd = intervalEnd; // final var for lambda.
 
             Set<Integer> generated = IntStream
@@ -90,10 +95,6 @@ public class CronExpressionParser implements ParserService<CronExpression, Strin
         }
 
         return result;
-    }
-
-    private int[] getRepeatedTimes(int start, int end, int interval){
-        return IntStream.iterate(start, i -> i <= end, i -> i + interval).toArray();
     }
 
 }

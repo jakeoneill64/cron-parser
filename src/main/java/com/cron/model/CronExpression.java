@@ -1,5 +1,6 @@
 package com.cron.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import java.util.Set;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Getter
+@EqualsAndHashCode
 public class CronExpression {
 
     public enum CronField{
@@ -28,26 +30,31 @@ public class CronExpression {
     public String toString(){
         String minutes = minute
                 .stream()
+                .sorted()
                 .map(String::valueOf)
                 .collect(Collectors.joining(" "));
 
         String hours = hour
                 .stream()
+                .sorted()
                 .map(String::valueOf)
                 .collect(Collectors.joining( " "));
 
         String daysOfMonth = dayOfMonth
                 .stream()
+                .sorted()
                 .map(String::valueOf)
                 .collect(Collectors.joining(" "));
 
         String months = month
                 .stream()
+                .sorted()
                 .map(String::valueOf)
                 .collect(Collectors.joining(" "));
 
         String daysOfWeek = dayOfWeek
                 .stream()
+                .sorted()
                 .map(String::valueOf)
                 .collect(Collectors.joining(" "));
 
